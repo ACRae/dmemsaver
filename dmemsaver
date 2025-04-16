@@ -1,0 +1,94 @@
+#!/bin/bash
+
+# Parse command-line arguments
+if [[ "$1" == "--export" ]]; then
+  ACTION="export"
+elif [[ "$1" == "--import" ]]; then
+  ACTION="import"
+else
+  echo "Usage: $0 --export | --import"
+  exit 1
+fi
+
+
+# Load environment variables (like GIT_USERNAME, GIT_EMAIL, GITHUB_TOKEN)
+if [ -f .env ]; then
+  set -a
+  source .env
+  set +a
+fi
+
+# Check if GIT_REPO_DIR is set and change to that directory
+if [[ -n "$GIT_REPO_DIR" && -d "$GIT_REPO_DIR" ]]; then
+  cd "$GIT_REPO_DIR" || exit
+else
+  echo "[!] GitHub repository directory not set or doesn't exist. Exiting..."
+  exit 1
+fi
+
+# Configure git identity
+if [[ -n "$GIT_USERNAME" && -n "$GIT_EMAIL" ]]; then
+  git config user.name "$GIT_USERNAME"
+  git config user.email "$GIT_EMAIL"
+fi
+
+# Update remote URL to use token authentication
+if [[ -n "$GITHUB_TOKEN" && -n "$GIT_USERNAME" && -n "$GIT_REPO_URL" ]]; then
+  # Convert https://github.com/user/repo.git → https://username:TOKEN@github.com/user/repo.git
+  AUTH_URL=$(echo "$GIT_REPO_URL" | sed "s#https://#https://$GIT_USERNAME:$GITHUB_TOKEN@#")
+  git remote set-url origin "$AUTH_URL"
+fi
+
+# Function to export saves
+export_saves() {
+  # Check if GIT_REPO_DIR is provided
+  if [[ -n "$GIT_REPO_DIR" ]]; then
+    echo "[+] Running export script..."
+    # Call the Python export script and pass GIT_REPO_DIR as an argument
+    python3 export.py "$GIT_REPO_DIR"  # Assuming export.py is in the same directory as this script
+  else
+    echo "[!] REPO_DIR not specified. Exiting..."
+    exit 1
+  fi
+
+  # Fetch the latest changes from the remote repository before pushing
+  echo "[+] Fetching the latest changes from remote repository..."
+  git fetch
+
+  # Check if there are any changes
+  if [[ -n $(git status --porcelain) ]]; then
+    echo "[+] Changes detected. Committing..."
+    git add .
+    git commit -m "Auto-update: Save data on $(date '+%Y-%m-%d %H:%M:%S') from $(hostname)"
+    git push
+  else
+    echo "[✓] No changes to commit."
+  fi
+}
+
+# Function to import saves
+import_saves() {
+  # Check if GIT_REPO_DIR is provided
+  if [[ -n "$GIT_REPO_DIR" ]]; then
+    # Fetch the latest changes from the remote repository
+    echo "[+] Fetching the latest changes from remote repository..."
+    git fetch
+
+    echo "[+] Running import script..."
+    # Call the Python import script and pass GIT_REPO_DIR as an argument
+    python3 import.py "$GIT_REPO_DIR"  # Assuming import.py is in the same directory as this script
+  else
+    echo "[!] REPO_DIR not specified. Exiting..."
+    exit 1
+  fi
+}
+
+# Execute based on the action specified
+if [[ "$ACTION" == "export" ]]; then
+  export_saves
+elif [[ "$ACTION" == "import" ]]; then
+  import_saves
+else
+  echo "[!] Invalid action. Use --export or --import."
+  exit 1
+fi
