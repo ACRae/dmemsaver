@@ -14,7 +14,6 @@ fi
 # Load environment variables (like GIT_USERNAME, GIT_EMAIL, GITHUB_TOKEN)
 if [ -f ~/.dmemsaver/.env ]; then
   set -a
-  cat ~/.dmemsaver/.env
   source ~/.dmemsaver/.env
   set +a
 fi

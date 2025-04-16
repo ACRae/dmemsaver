@@ -13,7 +13,7 @@ args = parser.parse_args()
 
 # Load INI config
 config = configparser.ConfigParser()
-config.read("config.ini")
+config.read(os.path.expanduser("~/.dmemsaver/config.ini"))
 
 # Get hostname
 HOST = os.uname().nodename
