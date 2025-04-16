@@ -24,7 +24,7 @@ It allows users to **export** game saves to version control and **import** them 
 ├── import.py          # Python script to import saves
 ├── dmemsaver          # Main bash entrypoint
 └── script/
-    ├── setup.sh       # Installer
+    ├── install.sh       # Installer
     └── uninstall.sh   # Uninstaller
 
 ```
