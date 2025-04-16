@@ -16,17 +16,17 @@ It allows users to **export** game saves to version control and **import** them 
 
 ---
 
-## 📁 Directory Structure
+## 📁 Project Structure
 ```
-. 
-├── config.ini # Defines emulator paths and included files 
-├── export.py # Exports save files to repo 
-├── import.py # Imports save files from repo 
-├── script/ 
-│ └── setup.sh # Installer script (clones and configures) 
-├── dmemsaver # Main CLI entrypoint (bash) 
-├── .env # GitHub credentials & repo configuration 
-└── README.md
+.dmemsaver/
+├── config.ini         # Emulator paths + rules
+├── export.py          # Python script to export saves
+├── import.py          # Python script to import saves
+├── dmemsaver          # Main bash entrypoint
+└── script/
+    ├── setup.sh       # Installer
+    └── uninstall.sh   # Uninstaller
+
 ```
 
 ---
