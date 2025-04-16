@@ -24,3 +24,7 @@ if ! grep -q "$INSTALL_DIR/$SCRIPT_NAME" "$PROFILE_FILE"; then
 else
   echo "[✓] dmemsaver already present in $PROFILE_FILE"
 fi
+
+echo "[✓] Installation complete. Restart your terminal or run:"
+echo "  source \"$PROFILE_FILE\""
+echo "to start using \`dmemsaver\`."
