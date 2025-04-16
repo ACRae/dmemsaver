@@ -36,7 +36,7 @@ It allows users to **export** game saves to version control and **import** them 
 Run this in your terminal (you’ll need `git`, `sh`, and `cron`):
 
 ```bash
-curl -s https://raw.githubusercontent.com/ACRae/dmemsaver/main/script/install.sh | sh
+curl -s https://raw.githubusercontent.com/ACRae/dmemsaver/main/scripts/install.sh | sh
 ```
 
 This will:
