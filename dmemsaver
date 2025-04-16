@@ -5,8 +5,12 @@ if [[ "$1" == "--export" ]]; then
   ACTION="export"
 elif [[ "$1" == "--import" ]]; then
   ACTION="import"
+elif [[ "$1" == "--uninstall" ]]; then
+  ACTION="uninstall"
+elif [[ "$1" == "--automatic" ]]; then
+  ACTION="automatic"
 else
-  echo "Usage: $0 --export | --import"
+  echo "Usage: $0 --export | --import | --uninstall | --automatic" 
   exit 1
 fi
 
@@ -89,6 +93,10 @@ if [[ "$ACTION" == "export" ]]; then
   export_saves
 elif [[ "$ACTION" == "import" ]]; then
   import_saves
+elif [[ "$ACTION" == "uninstall" ]]; then
+  sh ~/.dmemsaver/scripts/uninstall.sh
+elif [[ "$ACTION" == "automatic" ]]; then
+  sh ~/.dmemsaver/scripts/cron.sh
 else
   echo "[!] Invalid action. Use --export or --import."
   exit 1
