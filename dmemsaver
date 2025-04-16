@@ -12,9 +12,10 @@ fi
 
 
 # Load environment variables (like GIT_USERNAME, GIT_EMAIL, GITHUB_TOKEN)
-if [ -f .env ]; then
+if [ -f ~/.dmemsaver/.env ]; then
   set -a
-  source .env
+  cat ~/.dmemsaver/.env
+  source ~/.dmemsaver/.env
   set +a
 fi
 
@@ -45,7 +46,7 @@ export_saves() {
   if [[ -n "$GIT_REPO_DIR" ]]; then
     echo "[+] Running export script..."
     # Call the Python export script and pass GIT_REPO_DIR as an argument
-    python3 export.py "$GIT_REPO_DIR"  # Assuming export.py is in the same directory as this script
+    python3 ~/.dmemsaver/export.py "$GIT_REPO_DIR"  # Assuming export.py is in the same directory as this script
   else
     echo "[!] REPO_DIR not specified. Exiting..."
     exit 1
@@ -76,7 +77,7 @@ import_saves() {
 
     echo "[+] Running import script..."
     # Call the Python import script and pass GIT_REPO_DIR as an argument
-    python3 import.py "$GIT_REPO_DIR"  # Assuming import.py is in the same directory as this script
+    python3 ~/.dmemsaver/import.py "$GIT_REPO_DIR"  # Assuming import.py is in the same directory as this script
   else
     echo "[!] REPO_DIR not specified. Exiting..."
     exit 1
