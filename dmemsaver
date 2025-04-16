@@ -22,7 +22,8 @@ fi
 if [[ -n "$GIT_REPO_DIR" && -d "$GIT_REPO_DIR" ]]; then
   cd "$GIT_REPO_DIR" || exit
 else
-  echo "[!] GitHub repository directory not set or doesn't exist. Exiting..."
+  echo "[!] GitHub repository directory not set or doesn't exist."
+  echo "[!] Please setup a GitHub repository and setup .env file in ~/.dmemsaver/."
   exit 1
 fi
 
