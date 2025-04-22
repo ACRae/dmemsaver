@@ -16,7 +16,12 @@ else
   }
 fi
 
-sh ~/.dmemsaver/scripts/bashrc.sh
+# Make all .sh scripts in scripts/ executable
+echo "[+] Making script files executable..."
+find "$INSTALL_DIR/scripts" -type f -name "*.sh" -exec chmod +x {} \;
+
+# Run bashrc setup script
+sh "$INSTALL_DIR/scripts/bashrc.sh"
 
 echo "[✓] Installation complete. Restart your terminal or run:"
 echo "  source \"$BASHRC_FILE\""

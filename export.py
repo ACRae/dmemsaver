@@ -57,7 +57,7 @@ for app_name in config.sections():
             "-a",             # archive mode (recursive + preserves permissions)
             "--delete",       # delete files in dst not present in src
             str(src) + ("/" if src.is_dir() else ""),  # ensure trailing slash for dirs
-            str(dst.parent)
+            str(dst)
         ]
 
         try:
