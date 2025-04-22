@@ -25,3 +25,5 @@ else
   }
   echo "[✓] Reinstalled dmemsaver from scratch."
 fi
+
+sh ~/.dmemsaver/scripts/bashrc.sh
