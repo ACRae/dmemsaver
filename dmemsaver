@@ -9,11 +9,12 @@ elif [[ "$1" == "--uninstall" ]]; then
   ACTION="uninstall"
 elif [[ "$1" == "--automatic" ]]; then
   ACTION="automatic"
+elif [[ "$1" == "--update" ]]; then
+  ACTION="update"
 else
-  echo "Usage: $0 --export | --import | --uninstall | --automatic" 
+  echo "Usage: $0 --export | --import | --uninstall | --automatic | --update"
   exit 1
 fi
-
 
 # Load environment variables (like GIT_USERNAME, GIT_EMAIL, GITHUB_TOKEN)
 if [ -f ~/.dmemsaver/.env ]; then
@@ -39,31 +40,20 @@ fi
 
 # Update remote URL to use token authentication
 if [[ -n "$GITHUB_TOKEN" && -n "$GIT_USERNAME" && -n "$GIT_REPO_URL" ]]; then
-  # Convert https://github.com/user/repo.git → https://username:TOKEN@github.com/user/repo.git
   AUTH_URL=$(echo "$GIT_REPO_URL" | sed "s#https://#https://$GIT_USERNAME:$GITHUB_TOKEN@#")
   git remote set-url origin "$AUTH_URL"
 fi
 
 # Function to export saves
 export_saves() {
-  # Check if GIT_REPO_DIR is provided
-  if [[ -n "$GIT_REPO_DIR" ]]; then
-    echo "[+] Running export script..."
-    # Call the Python export script and pass GIT_REPO_DIR as an argument
-    python3 ~/.dmemsaver/export.py "$GIT_REPO_DIR"  # Assuming export.py is in the same directory as this script
-  else
-    echo "[!] REPO_DIR not specified. Exiting..."
-    exit 1
-  fi
-
-  # Fetch the latest changes from the remote repository before pushing
+  echo "[+] Running export script..."
+  python3 ~/.dmemsaver/export.py "$GIT_REPO_DIR"
   echo "[+] Fetching the latest changes from remote repository..."
-  git fetch
+  git pull
 
-  # Check if there are any changes
-  if [[ -n $(git status --porcelain) ]]; then
+  git add .
+  if [[ -n $(git diff) || -n $(git diff --cached) ]]; then
     echo "[+] Changes detected. Committing..."
-    git add .
     git commit -m "Auto-update: Save data on $(date '+%Y-%m-%d %H:%M:%S') from $(hostname)"
     git push
   else
@@ -73,31 +63,31 @@ export_saves() {
 
 # Function to import saves
 import_saves() {
-  # Check if GIT_REPO_DIR is provided
-  if [[ -n "$GIT_REPO_DIR" ]]; then
-    # Fetch the latest changes from the remote repository
-    echo "[+] Fetching the latest changes from remote repository..."
-    git fetch
-
-    echo "[+] Running import script..."
-    # Call the Python import script and pass GIT_REPO_DIR as an argument
-    python3 ~/.dmemsaver/import.py "$GIT_REPO_DIR"  # Assuming import.py is in the same directory as this script
-  else
-    echo "[!] REPO_DIR not specified. Exiting..."
-    exit 1
-  fi
+  echo "[+] Fetching the latest changes from remote repository..."
+  git pull
+  echo "[+] Running import script..."
+  python3 ~/.dmemsaver/import.py "$GIT_REPO_DIR"
 }
 
 # Execute based on the action specified
-if [[ "$ACTION" == "export" ]]; then
-  export_saves
-elif [[ "$ACTION" == "import" ]]; then
-  import_saves
-elif [[ "$ACTION" == "uninstall" ]]; then
-  sh ~/.dmemsaver/scripts/uninstall.sh
-elif [[ "$ACTION" == "automatic" ]]; then
-  sh ~/.dmemsaver/scripts/cron.sh
-else
-  echo "[!] Invalid action. Use --export or --import."
-  exit 1
-fi
+case "$ACTION" in
+  export)
+    export_saves
+    ;;
+  import)
+    import_saves
+    ;;
+  uninstall)
+    sh ~/.dmemsaver/scripts/uninstall.sh
+    ;;
+  automatic)
+    sh ~/.dmemsaver/scripts/cron.sh
+    ;;
+  update)
+    sh ~/.dmemsaver/scripts/update.sh
+    ;;
+  *)
+    echo "[!] Invalid action. Use --export | --import | --uninstall | --automatic | --update"
+    exit 1
+    ;;
+esac

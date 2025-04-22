@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-import shutil
+import subprocess
 import configparser
 from pathlib import Path
 import argparse
@@ -50,12 +50,18 @@ for app_name in config.sections():
             print(f"  [!] Missing path: {src}")
             continue
 
+        dst.parent.mkdir(parents=True, exist_ok=True)
+
+        rsync_cmd = [
+            "rsync",
+            "-a",             # archive mode (recursive + preserves permissions)
+            "--delete",       # delete files in dst not present in src
+            str(src) + ("/" if src.is_dir() else ""),  # ensure trailing slash for dirs
+            str(dst.parent)
+        ]
+
         try:
-            if src.is_dir():
-                shutil.copytree(src, dst, dirs_exist_ok=True)
-            else:
-                dst.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(src, dst)
-            print(f"  [+] Copied: {src} → {dst}")
-        except Exception as e:
-            print(f"  [!] Failed to copy {src}: {e}")
+            subprocess.run(rsync_cmd, check=True)
+            print(f"  [+] Synced: {src} → {dst}")
+        except subprocess.CalledProcessError as e:
+            print(f"  [!] rsync failed for {src}: {e}")

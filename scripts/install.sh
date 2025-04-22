@@ -2,7 +2,7 @@
 
 REPO_URL="https://github.com/ACRae/dmemsaver.git"
 INSTALL_DIR="$HOME/.dmemsaver"
-PROFILE_FILE="$HOME/.profile"
+BASHRC_FILE="$HOME/.bashrc"
 SCRIPT_NAME="dmemsaver"
 CRON_INTERVAL="hourly"  # Change to "daily" or "*/30 * * * *" if you want
 
@@ -16,15 +16,15 @@ else
   }
 fi
 
-# Add dmemsaver to .profile
-if ! grep -q "$INSTALL_DIR/$SCRIPT_NAME" "$PROFILE_FILE"; then
-  echo "[+] Adding dmemsaver to $PROFILE_FILE"
-  echo "export PATH=\"\$PATH:$INSTALL_DIR\"" >> "$PROFILE_FILE"
-  echo "alias dmemsaver=\"$INSTALL_DIR/$SCRIPT_NAME\"" >> "$PROFILE_FILE"
+# Add dmemsaver to .bashrc
+if ! grep -q "$INSTALL_DIR/$SCRIPT_NAME" "$BASHRC_FILE"; then
+  echo "[+] Adding dmemsaver to $BASHRC_FILE"
+  echo "export PATH=\"\$PATH:$INSTALL_DIR\"" >> "$BASHRC_FILE"
+  echo "alias dmemsaver=\"$INSTALL_DIR/$SCRIPT_NAME\"" >> "$BASHRC_FILE"
 else
-  echo "[✓] dmemsaver already present in $PROFILE_FILE"
+  echo "[✓] dmemsaver already present in $BASHRC_FILE"
 fi
 
 echo "[✓] Installation complete. Restart your terminal or run:"
-echo "  source \"$PROFILE_FILE\""
+echo "  source \"$BASHRC_FILE\""
 echo "to start using \`dmemsaver\`."
